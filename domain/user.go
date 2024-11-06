@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type User struct {
@@ -15,5 +16,5 @@ type User struct {
 	FavoriteTeams  []primitive.ObjectID `bson:"favorite_teams" json:"favorite_teams"`
 	Role           string               `bson:"role" json:"role"`
 	ProfilePicture string               `bson:"profile_picture" json:"profile_picture"`
-	Subscribe      bool                 `bson:"subscribe" json:"subscribe"`
+	IsPremium      bool                 `bson:"is_premiun" json:"is_premium"`
 }
