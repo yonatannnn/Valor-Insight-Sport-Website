@@ -17,7 +17,7 @@ func NewController(userUsecase interfaces.UserUsecase) *Controller {
 	}
 }
 
-// RegisterUser godoc
+
 func (c *Controller) RegisterUser(ctx *gin.Context) {
 	var user domain.User
 	ctx.BindJSON(&user)

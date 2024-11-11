@@ -17,4 +17,5 @@ type User struct {
 	Role           string               `bson:"role" json:"role"`
 	ProfilePicture string               `bson:"profile_picture" json:"profile_picture"`
 	IsPremium      bool                 `bson:"is_premiun" json:"is_premium"`
+	RefreshToken   string               `bson:"refresh_token" json:"refresh_token"`
 }
