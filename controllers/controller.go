@@ -31,13 +31,12 @@ func (c *Controller) RegisterUser(ctx *gin.Context) {
 }
 
 func (c *Controller) RefreshToken(ctx *gin.Context) {
-	var refresh_token = gin.Param("refresh_token")
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	var refresh_token = ctx.Param("refresh_token")
+	if refresh_token == "" {
 		ctx.JSON(400, gin.H{"error": "Invalid request"})
 		return
 	}
-
-	token, err := infrastructure.ValidateJWT(req.RefreshToken)
+	token, err := infrastructure.ValidateJWT(refresh_token)
 	if err != nil || !token.Valid {
 		ctx.JSON(401, gin.H{"error": "Invalid or expired refresh token"})
 		return
@@ -68,4 +67,14 @@ func (c *Controller) RefreshToken(ctx *gin.Context) {
 }
 
 func (c *Controller) Login(ctx *gin.Context) {
-	
+	var user domain.User
+	ctx.BindJSON(&user)
+
+	token, err := c.UserUsecase.Login(user)
+
+	if err.Message != "" {
+		ctx.JSON(400, gin.H{"error": err.Message})
+		return
+	}
+	ctx.JSON(200, gin.H{"token": token})
+}

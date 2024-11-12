@@ -47,3 +47,28 @@ func (uu *UserUsecase) RegisterUser(user domain.User) (string, domain.Error) {
 
 	return token, domain.Error{}
 }
+
+func (uu *UserUsecase) Login(user domain.User) (string, domain.Error) {
+	userData, err := uu.UserRepository.GetUserByUsername(user.Username)
+	if err.Message != "" {
+		return "", err
+	}
+	err = infrastructure.ComparePasswords(userData.Password, user.Password)
+	if err.Message != "" {
+		return "", err
+	}
+
+	token, refreshToken, tokenError := infrastructure.GenerateJWT(userData)
+	if tokenError.Message != "" {
+		return "", domain.Error{Message: err.Message, StatusCode: 500}
+	}
+
+	userData.RefreshToken = refreshToken
+
+	_, err = uu.UserRepository.UpdateUser(userData)
+	if err.Message != "" {
+		return "", err
+	}
+
+	return token, domain.Error{}
+}

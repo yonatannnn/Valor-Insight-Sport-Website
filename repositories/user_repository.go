@@ -83,3 +83,14 @@ func (ur *UserRepository) GetUserByID(id string) (domain.User, domain.Error) {
 	}
 	return user, e
 }
+
+func (ur *UserRepository) UpdateUser(user domain.User) domain.Error {
+	var e domain.Error
+	_, error := ur.dc.ReplaceOne(ur.ctx, bson.D{{"user_id", user.UserId}}, user)
+	if error != nil {
+		e.Message = error.Error()
+		e.StatusCode = 500
+		return e
+	}
+	return e
+}

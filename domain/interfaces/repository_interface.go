@@ -10,5 +10,5 @@ type UserRepository interface {
 	// PromoteUser(userID int) domain.Error
 	GetUserByID(id string) (domain.User, domain.Error)
 	GetUserByUsername(username string) (domain.User, domain.Error)
-	// UpdateUser(user domain.User) (domain.User, domain.Error)
+	UpdateUser(user domain.User) (domain.User, domain.Error)
 }

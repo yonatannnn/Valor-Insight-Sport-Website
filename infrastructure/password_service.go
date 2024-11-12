@@ -17,6 +17,12 @@ func CashPassword(password string) ([]byte, domain.Error) {
 
 }
 
-func ComparePasswords(hashedPassword string, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+func ComparePasswords(hashedPassword string, password string) domain.Error {
+	var e = domain.Error{}
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		e.Message = err.Error()
+		e.StatusCode = 500
+	}
+	return e
 }
