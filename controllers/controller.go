@@ -17,14 +17,13 @@ func NewController(userUsecase interfaces.UserUsecase) *Controller {
 	}
 }
 
-
 func (c *Controller) RegisterUser(ctx *gin.Context) {
 	var user domain.User
 	ctx.BindJSON(&user)
 	token, err := c.UserUsecase.RegisterUser(user)
-	if err != nil {
-		ctx.JSON(400, gin.H{"error": err.Error()})
+	if err.Message != "" {
+		ctx.JSON(400, gin.H{"error": err.Message})
 		return
 	}
-	ctx.JSON(200, gin.H{"token": token})
+	ctx.JSON(200, gin.H{"Message": token})
 }

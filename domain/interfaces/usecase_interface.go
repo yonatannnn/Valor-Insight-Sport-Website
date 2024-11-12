@@ -5,5 +5,5 @@ import (
 )
 
 type UserUsecase interface {
-	RegisterUser(User domain.User) (string, error)
+	RegisterUser(User domain.User) (string, domain.Error)
 }
