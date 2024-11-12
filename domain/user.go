@@ -8,6 +8,8 @@ import (
 
 type User struct {
 	ID             primitive.ObjectID   `bson:"_id,omitempty" json:"_id,omitempty"`
+	FirstName      string               `bson:"first_name" json:"first_name"`
+	LastName       string               `bson:"last_name" json:"last_name"`
 	Username       string               `bson:"username" json:"username"`
 	Email          string               `bson:"email" json:"email"`
 	Password       string               `bson:"password" json:"password"`
@@ -18,4 +20,5 @@ type User struct {
 	ProfilePicture string               `bson:"profile_picture" json:"profile_picture"`
 	IsPremium      bool                 `bson:"is_premiun" json:"is_premium"`
 	RefreshToken   string               `bson:"refresh_token" json:"refresh_token"`
+	UserId         string               `bson:"user_id" json:"user_id"`
 }

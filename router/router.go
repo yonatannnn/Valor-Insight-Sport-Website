@@ -10,7 +10,8 @@ import (
 func SetupRouter(tc *controllers.Controller) *gin.Engine {
 	r := gin.Default()
 	r.POST("/register", tc.RegisterUser)
-
+	r.POST("/login", tc.Login)
+	r.POST("/refresh", tc.RefreshToken)
 	auth := r.Group("/")
 	auth.Use(infrastructure.JWTMiddleware())
 	{

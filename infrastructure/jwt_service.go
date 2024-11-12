@@ -11,20 +11,38 @@ import (
 
 var jwtSecretKey = []byte(os.Getenv("SECRET_KEY"))
 
-func GenerateJWT(user domain.User) (string, error) {
+func GenerateJWT(user domain.User) (string, string, domain.Error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id":  user.ID,
-		"username": user.Username,
-		"role":     user.Role,
-		"exp":      time.Now().Add(time.Hour * 24 * 3).Unix(),
+		"user_id":    user.UserId,
+		"email":      user.Email,
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
+		"username":   user.Username,
+		"role":       user.Role,
+		"exp":        time.Now().Add(time.Hour * 24 * 3).Unix(),
+	})
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id":    user.UserId,
+		"email":      user.Email,
+		"first_name": user.FirstName,
+		"last_name":  user.LastName,
+		"username":   user.Username,
+		"role":       user.Role,
+		"exp":        time.Now().Add(time.Hour * 24 * 100).Unix(),
 	})
 
 	tokenString, err := token.SignedString(jwtSecretKey)
 	if err != nil {
-		return "", err
+		return "", "", domain.Error{Message: err.Error(), StatusCode: 500}
 	}
 
-	return tokenString, nil
+	refreshTokenString, err := refreshToken.SignedString(jwtSecretKey)
+	if err != nil {
+		return "", "", domain.Error{Message: err.Error(), StatusCode: 500}
+	}
+
+	return tokenString, refreshTokenString, domain.Error{}
 }
 
 func ValidateJWT(tokenString string) (*jwt.Token, error) {
