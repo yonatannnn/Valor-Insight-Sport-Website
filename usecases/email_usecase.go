@@ -24,7 +24,7 @@ func NewEmailUsecase(repo interfaces.VerificationRepository, emailService infras
 
 func (u *emailUsecase) SendVerificationCode(ctx context.Context, email string) error {
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
-	expiration := time.Now().Add(10 * time.Minute)
+	expiration := time.Now().Add(15 * time.Minute)
 	id := primitive.NewObjectID()
 	strId := id.Hex()
 
@@ -44,12 +44,16 @@ func (u *emailUsecase) SendVerificationCode(ctx context.Context, email string) e
 
 func (u *emailUsecase) VerifyCode(ctx context.Context, email, code string) error {
 	storedCode, err := u.repo.GetCode(ctx, email)
-	if err != nil || storedCode == nil {
+	if err.Message != "" {
 		return errors.New("verification code not found")
 	}
 
-	if storedCode.Code != code || time.Now().After(storedCode.ExpiresAt) {
-		return errors.New("invalid or expired verification code")
+	if storedCode.Code != code {
+		return errors.New("invalid verification code")
+	}
+
+	if time.Now().After(storedCode.ExpiresAt) {
+		return errors.New("verification code expired")
 	}
 
 	return nil

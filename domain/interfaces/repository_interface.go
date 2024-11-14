@@ -16,5 +16,5 @@ type UserRepository interface {
 
 type VerificationRepository interface {
 	SaveCode(ctx context.Context, code domain.VerificationCode) error
-	GetCode(ctx context.Context, email string) (*domain.VerificationCode, error)
+	GetCode(ctx context.Context, email string) (*domain.VerificationCode, domain.Error)
 }

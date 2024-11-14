@@ -24,11 +24,11 @@ func (r *verificationRepository) SaveCode(ctx context.Context, code domain.Verif
 	return err
 }
 
-func (r *verificationRepository) GetCode(ctx context.Context, email string) (*domain.VerificationCode, error) {
+func (r *verificationRepository) GetCode(ctx context.Context, email string) (*domain.VerificationCode, domain.Error) {
 	var code domain.VerificationCode
 	err := r.collection.FindOne(ctx, bson.M{"email": email}).Decode(&code)
 	if err != nil {
-		return nil, err
+		return nil, domain.Error{Message: "verification code not found", StatusCode: 404}
 	}
-	return &code, nil
+	return &code, domain.Error{}
 }
