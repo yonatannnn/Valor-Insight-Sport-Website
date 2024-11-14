@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+	"net/http"
 	domain "valorInsight/domain"
 	interfaces "valorInsight/domain/interfaces"
 	"valorInsight/infrastructure"
@@ -10,12 +12,14 @@ import (
 )
 
 type Controller struct {
-	UserUsecase interfaces.UserUsecase
+	UserUsecase  interfaces.UserUsecase
+	EmailUsecase interfaces.EmailUsecase
 }
 
-func NewController(userUsecase interfaces.UserUsecase) *Controller {
+func NewController(userUsecase interfaces.UserUsecase, emailUsecase interfaces.EmailUsecase) *Controller {
 	return &Controller{
-		UserUsecase: userUsecase,
+		UserUsecase:  userUsecase,
+		EmailUsecase: emailUsecase,
 	}
 }
 
@@ -28,6 +32,45 @@ func (c *Controller) RegisterUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, gin.H{"token": token})
+}
+
+func (c *Controller) SendCode(ctx *gin.Context) {
+	var request struct {
+		Email string `json:"email"`
+	}
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	fmt.Println("Controller", request.Email)
+
+	if err := c.EmailUsecase.SendVerificationCode(ctx, request.Email); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Verification code sent"})
+}
+
+func (c *Controller) VerifyCode(ctx *gin.Context) {
+	var request struct {
+		Email string `json:"email"`
+		Code  string `json:"code"`
+	}
+
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	if err := c.EmailUsecase.VerifyCode(ctx, request.Email, request.Code); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Email verified"})
 }
 
 func (c *Controller) RefreshToken(ctx *gin.Context) {

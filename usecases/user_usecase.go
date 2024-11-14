@@ -5,7 +5,6 @@ import (
 	"valorInsight/domain"
 	interfaces "valorInsight/domain/interfaces"
 	"valorInsight/infrastructure"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -65,7 +64,7 @@ func (uu *UserUsecase) Login(user domain.User) (string, domain.Error) {
 
 	userData.RefreshToken = refreshToken
 
-	_, err = uu.UserRepository.UpdateUser(userData)
+	err = uu.UserRepository.UpdateUser(userData)
 	if err.Message != "" {
 		return "", err
 	}

@@ -12,6 +12,8 @@ func SetupRouter(tc *controllers.Controller) *gin.Engine {
 	r.POST("/register", tc.RegisterUser)
 	r.POST("/login", tc.Login)
 	r.POST("/refresh", tc.RefreshToken)
+	r.POST("/send-code", tc.SendCode)
+	r.POST("/verify-code", tc.VerifyCode)
 	auth := r.Group("/")
 	auth.Use(infrastructure.JWTMiddleware())
 	{

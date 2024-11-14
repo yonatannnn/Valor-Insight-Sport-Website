@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"valorInsight/controllers"
@@ -10,7 +9,6 @@ import (
 	"valorInsight/repositories"
 	"valorInsight/router"
 	"valorInsight/usecases"
-
 	"github.com/joho/godotenv"
 )
 
@@ -20,16 +18,26 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	mongoURI := os.Getenv("MONGO_URI")
-	databaseName := "valorInsight"
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort := os.Getenv("SMTP_PORT")
+	smtpEmail := os.Getenv("SMTP_USER")
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
+	databaseName := os.Getenv("DATABASE_NAME")
 
 	userCollection := infrastructure.ConnectMonogodb(databaseName, "users", mongoURI)
-	userRepositroy := repositories.NewUserRepository(userCollection, context.TODO())
-	UserUsecase := usecases.NewUserUsecase(userRepositroy)
+	verificationCodeCollection := infrastructure.ConnectMonogodb(databaseName, "verification_codes", mongoURI)
 
-	controller := controllers.NewController(UserUsecase)
+	userRepositroy := repositories.NewUserRepository(userCollection, context.TODO())
+	emailRepositroy := repositories.NewVerificationRepository(verificationCodeCollection)
+
+	emailService := infrastructure.NewEmailService(smtpEmail, smtpPassword, smtpHost, smtpPort)
+
+	userUsecase := usecases.NewUserUsecase(userRepositroy)
+	emailUsecase := usecases.NewEmailUsecase(emailRepositroy, emailService)
+
+	controller := controllers.NewController(userUsecase, emailUsecase)
 
 	r := router.SetupRouter(controller)
 	r.Run(":8080")
-	fmt.Println("Connected to MongoDB collection:", userCollection.Name())
 
 }
