@@ -26,12 +26,12 @@ func NewController(userUsecase interfaces.UserUsecase, emailUsecase interfaces.E
 func (c *Controller) RegisterUser(ctx *gin.Context) {
 	var user domain.User
 	ctx.BindJSON(&user)
-	token, err := c.UserUsecase.RegisterUser(user)
+	token, refreshToken, err := c.UserUsecase.RegisterUser(user)
 	if err.Message != "" {
 		ctx.JSON(400, gin.H{"error": err.Message})
 		return
 	}
-	ctx.JSON(200, gin.H{"token": token})
+	ctx.JSON(200, gin.H{"token": token, "refresh_token": refreshToken})
 }
 
 func (c *Controller) SendCode(ctx *gin.Context) {
@@ -113,11 +113,11 @@ func (c *Controller) Login(ctx *gin.Context) {
 	var user domain.User
 	ctx.BindJSON(&user)
 
-	token, err := c.UserUsecase.Login(user)
+	token, refreshToken, err := c.UserUsecase.Login(user)
 
 	if err.Message != "" {
 		ctx.JSON(400, gin.H{"error": err.Message})
 		return
 	}
-	ctx.JSON(200, gin.H{"token": token})
+	ctx.JSON(200, gin.H{"token": token, "refresh_token": refreshToken})
 }

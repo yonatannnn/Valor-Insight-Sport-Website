@@ -13,10 +13,10 @@ func SetupRouter(tc *controllers.Controller) *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, // Correct field for specifying allowed origins
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization", "Origin", "Accept"},
-		ExposeHeaders:    []string{"Content-Length"}, // Optional, exposes headers to the frontend
+		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
